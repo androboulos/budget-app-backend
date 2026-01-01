@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Budget</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f9;
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      color: #2C6E91;
+      text-align: center;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #2C6E91;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    ul {
+      margin-top: 15px;
+      padding-left: 20px;
+    }
+
+    #total {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>
+  <p id="welcome"></p>
+  💰 Mon Budget</h2>
+
+    <input type="text" id="label" placeholder="Dépense (ex: Courses)">
+    <input type="number" id="amount" placeholder="Montant">
+
+    <button onclick="addExpense()">Ajouter</button>
+
+    <ul id="expenses"></ul>
+    <div id="total"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
