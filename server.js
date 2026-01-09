@@ -5,19 +5,27 @@ const path = require("path");
 const app = express();
 app.use(express.json());
 
-// === SERVIR LES FRONTENDS ===
+// ===============================
+// SERVIR LES FRONTENDS
+// ===============================
 app.use("/auth", express.static(path.join(__dirname, "auth-frontend")));
 app.use("/budget", express.static(path.join(__dirname, "budget-frontend")));
 
-// === BASE UTILISATEURS (TEMPORAIRE) ===
+// ===============================
+// BASE EN MÉMOIRE (TEMPORAIRE)
+// ===============================
 let users = [];
 
-// === ROUTE TEST ===
+// ===============================
+// ROUTE TEST
+// ===============================
 app.get("/", (req, res) => {
-  res.send("Serveur API Budget + Auth opérationnel");
+  res.send("Serveur API Budget + Auth opérationnel !");
 });
 
-// === INSCRIPTION ===
+// ===============================
+// INSCRIPTION
+// ===============================
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body;
 
@@ -41,7 +49,9 @@ app.post("/api/register", async (req, res) => {
   res.status(201).json({ message: "Inscription réussie" });
 });
 
-// === CONNEXION ===
+// ===============================
+// CONNEXION
+// ===============================
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -58,13 +68,22 @@ app.post("/api/login", async (req, res) => {
   res.json({ message: "Connexion réussie", email });
 });
 
-// === AJOUT DÉPENSE ===
+// ===============================
+// AJOUT DÉPENSE
+// ===============================
 app.post("/api/budget/add", (req, res) => {
   const { email, label, amount } = req.body;
 
-  const user = users.find(u => u.email === email);
+  let user = users.find(u => u.email === email);
+
+  // ✅ créer l'utilisateur si absent
   if (!user) {
-    return res.status(401).json({ message: "Utilisateur non connecté" });
+    user = {
+      email,
+      password: "",
+      expenses: []
+    };
+    users.push(user);
   }
 
   user.expenses.push({
@@ -76,11 +95,20 @@ app.post("/api/budget/add", (req, res) => {
   res.status(201).json({ message: "Dépense ajoutée" });
 });
 
-// === VOIR BUDGET ===
+// ===============================
+// VOIR BUDGET
+// ===============================
 app.get("/api/budget/:email", (req, res) => {
-  const user = users.find(u => u.email === req.params.email);
+  let user = users.find(u => u.email === req.params.email);
+
+  // ✅ créer l'utilisateur si absent
   if (!user) {
-    return res.status(404).json({ message: "Utilisateur introuvable" });
+    user = {
+      email: req.params.email,
+      password: "",
+      expenses: []
+    };
+    users.push(user);
   }
 
   const total = user.expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -91,14 +119,9 @@ app.get("/api/budget/:email", (req, res) => {
   });
 });
 
-// === LANCER SERVEUR ===
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Serveur lancé sur le port " + PORT);
-});
-
-// ❌ SUPPRIMER UNE DÉPENSE
+// ===============================
+// SUPPRIMER UNE DÉPENSE
+// ===============================
 app.delete("/api/budget/delete/:email/:id", (req, res) => {
   const { email, id } = req.params;
 
@@ -110,4 +133,12 @@ app.delete("/api/budget/delete/:email/:id", (req, res) => {
   user.expenses = user.expenses.filter(e => e.id != id);
 
   res.json({ message: "Dépense supprimée" });
+});
+
+// ===============================
+// LANCER SERVEUR
+// ===============================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log("Serveur lancé sur le port", PORT);
 });
